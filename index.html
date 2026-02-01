@@ -100,10 +100,9 @@ textarea{
   <h2>Dev Console</h2>
   <textarea id="devInput" placeholder="// JS or CSS
 // Save = permanent"></textarea>
-  <button onclick="runDev()">Run (temp)</button>
-  <button onclick="saveJS()">Save Permanent JS</button>
-  <button onclick="saveCSS()">Save Permanent CSS</button>
-  <button onclick="clearAll()" style="opacity:.6">Clear Permanent</button>
+  <button onclick="runTemp()">Run (Temp)</button>
+  <button onclick="savePermanent()">Save Permanent</button>
+  <button onclick="clearPermanent()" style="opacity:.6">Clear Permanent</button>
   <button onclick="goHome()">Home</button>
 </div>
 
@@ -130,38 +129,36 @@ function openApp(id){setScreen(id)}
 function goHome(){setScreen("home")}
 document.getElementById("lock").onclick=()=>setScreen("home")
 
-/* PERSISTENCE */
-const JSKEY="NULLPHONE_JS",CSSKEY="NULLPHONE_CSS";
+/* ===== PERMANENT ENGINE ===== */
+const KEY="NULLPHONE_PERMANENT";
 const sandbox=document.getElementById("sandbox-style");
 const dev=document.getElementById("devInput");
 
-/* LOAD SAVED */
-if(localStorage.getItem(CSSKEY)){
-  sandbox.textContent=localStorage.getItem(CSSKEY)
-}
-if(localStorage.getItem(JSKEY)){
-  try{new Function(localStorage.getItem(JSKEY))()}catch(e){}
+/* LOAD PERMANENT ON BOOT */
+const saved=localStorage.getItem(KEY);
+if(saved){
+  try{
+    if(saved.trim().startsWith("/*CSS*/")){
+      sandbox.textContent=saved.replace("/*CSS*/","");
+    }else{
+      new Function(saved)();
+    }
+  }catch(e){console.log("Boot error:",e.message)}
 }
 
-/* DEV */
-function runDev(){
-  try{new Function(dev.value)();alert("Executed (temp)")}
+/* DEV ACTIONS */
+function runTemp(){
+  try{new Function(dev.value)();alert("Ran (temporary)")}
   catch(e){alert(e.message)}
 }
-function saveJS(){
-  localStorage.setItem(JSKEY,dev.value);
-  alert("Permanent JS saved. Reload to confirm.")
+function savePermanent(){
+  localStorage.setItem(KEY,dev.value);
+  alert("Saved permanently. Reload to confirm.");
 }
-function saveCSS(){
-  localStorage.setItem(CSSKEY,dev.value);
-  sandbox.textContent=dev.value;
-  alert("Permanent CSS saved.")
-}
-function clearAll(){
-  localStorage.removeItem(JSKEY);
-  localStorage.removeItem(CSSKEY);
+function clearPermanent(){
+  localStorage.removeItem(KEY);
   sandbox.textContent="";
-  alert("Permanent code cleared. Reload.")
+  alert("Cleared. Reload clean.");
 }
 </script>
 </body>
