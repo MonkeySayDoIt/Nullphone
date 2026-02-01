@@ -1,165 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>NULLPHONE</title>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;height:100vh;background:black;
-  display:flex;align-items:center;justify-content:center;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif
+/* =========================
+   BASE (NEVER BREAKS)
+   ========================= */
+
+/* Lock the page (prevents Safari scroll stealing gestures) */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
 }
-.phone{
-  width:100%;max-width:390px;height:100%;max-height:780px;
-  background:#0b0b0b;color:white;border-radius:26px;
-  overflow:hidden;position:relative
+body { min-height: 100dvh; background: #000; }
+
+/* Centered shell on desktop, fullscreen on mobile (CSS below can override) */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-.status{
-  height:32px;padding:6px 12px;
-  display:flex;justify-content:space-between;
-  font-size:13px;opacity:.85
+
+/* Phone */
+.phone {
+  width: min(420px, 100vw);
+  height: min(820px, 100dvh);
+  background: #0b0b0b;
+  color: #fff;
+  border-radius: 26px;
+  overflow: hidden;
+  position: relative;
 }
-.screen{
-  position:absolute;top:32px;left:0;right:0;bottom:0;
-  background:#0b0b0b;
-  transform:translateY(100%);
-  opacity:0;
-  transition:transform .35s ease,opacity .35s ease
+
+/* Status bar */
+.status {
+  height: 34px;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  opacity: 0.9;
+  user-select: none;
 }
-.screen.active{transform:translateY(0);opacity:1}
-.lock{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.lock .time{font-size:48px;font-weight:300}
-.lock .hint{opacity:.5;margin-top:10px}
-.home{
-  padding:28px;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:22px
+
+/* Screens */
+.screen {
+  position: absolute;
+  top: 34px;
+  left: 0; right: 0; bottom: 0;
+  background: #0b0b0b;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform .28s ease, opacity .28s ease;
+  overflow: hidden;
 }
-.icon{text-align:center;font-size:12px}
-.icon .box{
-  width:64px;height:64px;border-radius:16px;
-  background:#1a1a1a;margin:0 auto 6px;
-  display:flex;align-items:center;justify-content:center;font-size:24px
+.screen.active { transform: translateY(0); opacity: 1; }
+
+/* Lock screen */
+.lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
-.app{padding:24px;display:flex;flex-direction:column}
-.app button{
-  margin-top:auto;padding:14px;border-radius:14px;
-  background:#1a1a1a;color:white;border:none;font-size:16px
+.lock .time {
+  font-size: 52px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
 }
-textarea{
-  flex:1;background:#050505;color:#00ff88;
-  font-family:monospace;border:none;border-radius:12px;
-  padding:12px;margin-bottom:12px;resize:none
+.lock .hint { opacity: 0.55; }
+
+/* Home grid (apps together by default) */
+.home {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-content: start;
+  justify-items: center;
+}
+
+/* Icons */
+.icon {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  user-select: none;
+}
+.icon .box {
+  width: 64px; height: 64px;
+  border-radius: 16px;
+  background: #1a1a1a;
+  margin: 0 auto 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* App layout */
+.app {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.app h2 { margin: 0 0 2px; font-weight: 700; }
+.app p { margin: 0; opacity: 0.75; line-height: 1.35; }
+hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 10px 0; }
+
+button {
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  color: #fff;
+  background: #1a1a1a;
+  font-size: 16px;
+}
+button:active { transform: scale(0.99); opacity: 0.92; }
+
+/* Dev textarea */
+textarea {
+  flex: 1;
+  min-height: 220px;
+  background: #050505;
+  color: #00ff88;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  resize: none;
+  outline: none;
+}
+.small { font-size: 12px; opacity: 0.65; }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; }
+
+/* Fullscreen “app mode” feel on iPhone when added to Home Screen */
+@media (max-width: 520px) {
+  .phone {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+  }
 }
 </style>
 
-<style id="sandbox-style"></style>
+<!-- Two permanent slots -->
+<style id="theme-style"></style>     <!-- permanent theme css -->
+<style id="temp-style"></style>      <!-- temp css sandbox -->
+<style id="core-style"></style>      <!-- core css hooks (rarely used) -->
 </head>
 
 <body>
-<div class="phone">
+<div class="phone" id="phone">
+  <div class="status" id="statusBar">
+    <div id="statusTime">--:--</div>
+    <div id="battery">100%</div>
+  </div>
 
-<div class="status">
-  <div id="statusTime"></div>
-  <div id="battery"></div>
-</div>
+  <div class="screen lock active" id="lock">
+    <div class="time" id="lockTime">--:--</div>
+    <div class="hint">Tap to unlock</div>
+  </div>
 
-<div class="screen lock active" id="lock">
-  <div class="time" id="lockTime"></div>
-  <div class="hint">Tap to unlock</div>
-</div>
+  <div class="screen home" id="home">
+    <div class="icon" data-app="system"><div class="box">⚙️</div>System</div>
+    <div class="icon" data-app="signal"><div class="box">📡</div>Signal</div>
+    <div class="icon" data-app="void"><div class="box">⬛</div>Void</div>
+    <div class="icon" data-app="prefs"><div class="box">🛠️</div>Prefs</div>
+    <div class="icon" data-app="dev"><div class="box">💻</div>Dev</div>
+  </div>
 
-<div class="screen home" id="home">
-  <div class="icon" onclick="openApp('system')"><div class="box">⚙️</div>System</div>
-  <div class="icon" onclick="openApp('signal')"><div class="box">📡</div>Signal</div>
-  <div class="icon" onclick="openApp('void')"><div class="box">⬛</div>Void</div>
-  <div class="icon" onclick="openApp('dev')"><div class="box">💻</div>Dev</div>
-</div>
+  <div class="screen app" id="system">
+    <h2>System</h2>
+    <p id="sysText">NULLPHONE OS 1.0</p>
+    <hr />
+    <p class="small">Tip: Tap top-left of status bar for Control Center.</p>
+    <button onclick="goHome()">Home</button>
+  </div>
 
-<div class="screen app" id="system">
-  <h2>System</h2>
-  <p id="sysText">NULLPHONE OS 1.0</p>
-  <button onclick="goHome()">Home</button>
-</div>
+  <div class="screen app" id="signal">
+    <h2>Signal</h2>
+    <p id="sigText">Awaiting input.</p>
+    <button onclick="goHome()">Home</button>
+  </div>
 
-<div class="screen app" id="signal">
-  <h2>Signal</h2>
-  <p id="sigText">Awaiting input.</p>
-  <button onclick="goHome()">Home</button>
-</div>
+  <div class="screen app" id="void">
+    <h2>Void</h2>
+    <p>Nothing responds.</p>
+    <button onclick="goHome()">Home</button>
+  </div>
 
-<div class="screen app" id="void">
-  <h2>Void</h2>
-  <p>Nothing responds.</p>
-  <button onclick="goHome()">Home</button>
-</div>
+  <div class="screen app" id="prefs">
+    <h2>Preferences</h2>
+    <p class="small">Safe sliders that won’t break core.</p>
 
-<div class="screen app" id="dev">
-  <h2>Dev Console</h2>
-  <textarea id="devInput" placeholder="// JS or CSS
-// Save = permanent"></textarea>
-  <button onclick="runTemp()">Run (Temp)</button>
-  <button onclick="savePermanent()">Save Permanent</button>
-  <button onclick="clearPermanent()" style="opacity:.6">Clear Permanent</button>
-  <button onclick="goHome()">Home</button>
-</div>
+    <div style="display:flex;flex-direction:column;gap:14px;flex:1;margin-top:8px;">
+      <div>
+        <div class="small" style="margin-bottom:6px;">Accent Hue</div>
+        <input id="hue" type="range" min="0" max="360" value="210" style="width:100%;">
+      </div>
 
+      <div>
+        <div class="small" style="margin-bottom:6px;">Glow</div>
+        <input id="glow" type="range" min="0" max="100" value="25" style="width:100%;">
+      </div>
+
+      <div>
+        <div class="small" style="margin-bottom:6px;">Darken</div>
+        <input id="dark" type="range" min="0" max="25" value="0" style="width:100%;">
+      </div>
+
+      <label style="display:flex;align-items:center;gap:10px;opacity:.9;">
+        <input id="motion" type="checkbox">
+        Reduce motion
+      </label>
+
+      <button id="resetPrefs" style="opacity:.85;">Reset theme settings</button>
+    </div>
+
+    <button onclick="goHome()">Home</button>
+  </div>
+
+  <div class="screen app" id="dev">
+    <h2>Dev Console</h2>
+    <p class="small">Run temp JS/CSS. Save JS/CSS permanently (separate slots).</p>
+    <textarea id="devInput" placeholder="JS:  document.getElementById('sysText').textContent='Hi';
+CSS: /*CSS*/ .icon .box{ transform: rotate(-2deg);}"></textarea>
+
+    <div class="row">
+      <button onclick="runTemp()">Run Temp</button>
+      <button onclick="clearTemp()" style="opacity:.8;">Clear Temp</button>
+    </div>
+
+    <div class="row">
+      <button onclick="savePermanentJS()">Save Permanent JS</button>
+      <button onclick="savePermanentCSS()">Save Permanent CSS</button>
+    </div>
+
+    <div class="row">
+      <button onclick="clearPermanentJS()" style="opacity:.75;">Clear Perm JS</button>
+      <button onclick="clearPermanentCSS()" style="opacity:.75;">Clear Perm CSS</button>
+    </div>
+
+    <button onclick="goHome()">Home</button>
+  </div>
+
+  <!-- Control Center (always present, never lost) -->
+  <div class="screen app" id="ctrlCenter">
+    <h2>Control Center</h2>
+    <p class="small">Standalone tools.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+      <button onclick="location.reload()">Reload App</button>
+      <button onclick="goBack()">Back</button>
+      <button onclick="panicClear()" style="opacity:.75;">Panic: Clear ALL Saved Code</button>
+    </div>
+
+    <p class="small" style="margin-top:12px;">Open: tap top-left of status bar.</p>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Invisible hotspot top-left to open Control Center -->
+  <div id="ccHotspot" style="position:absolute;top:0;left:0;width:80px;height:34px;opacity:0;z-index:9999;"></div>
 </div>
 
 <script>
-/* CLOCK */
-const st=document.getElementById("statusTime");
-const lt=document.getElementById("lockTime");
-setInterval(()=>{const t=new Date().toLocaleTimeString([],{
-  hour:"2-digit",minute:"2-digit"
-});st.textContent=t;lt.textContent=t},1000);
+/* =========================
+   KEYS (TWO SLOTS)
+   ========================= */
+const KEY_PERM_JS   = "NULLPHONE_CORE_JS";
+const KEY_PERM_CSS  = "NULLPHONE_THEME_CSS";
+const KEY_PREFS     = "NULLPHONE_PREFS";
+const KEY_DEV_DRAFT = "NULLPHONE_DEV_DRAFT";
 
-/* BATTERY */
-let b=100;const be=document.getElementById("battery");
-setInterval(()=>{b=Math.max(0,b-.05);be.textContent=Math.floor(b)+"%"},3000);
+/* =========================
+   BASIC NAV
+   ========================= */
+function setScreen(id) {
+  const active = document.querySelector(".screen.active");
+  if (active && active.id && active.id !== "ctrlCenter") window.__np_lastScreen = active.id;
 
-/* NAV */
-function setScreen(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active")
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  const el = document.getElementById(id);
+  if (el) el.classList.add("active");
 }
-function openApp(id){setScreen(id)}
-function goHome(){setScreen("home")}
-document.getElementById("lock").onclick=()=>setScreen("home")
+function goHome(){ setScreen("home"); }
+function openApp(id){ setScreen(id); }
+function goBack(){
+  const target = (window.__np_lastScreen && window.__np_lastScreen !== "ctrlCenter") ? window.__np_lastScreen : "home";
+  setScreen(target);
+}
+window.__np_lastScreen = "home";
 
-/* ===== PERMANENT ENGINE ===== */
-const KEY="NULLPHONE_PERMANENT";
-const sandbox=document.getElementById("sandbox-style");
-const dev=document.getElementById("devInput");
+/* Lock -> Home */
+document.getElementById("lock").addEventListener("click", () => setScreen("home"));
 
-/* LOAD PERMANENT ON BOOT */
-const saved=localStorage.getItem(KEY);
-if(saved){
-  try{
-    if(saved.trim().startsWith("/*CSS*/")){
-      sandbox.textContent=saved.replace("/*CSS*/","");
-    }else{
-      new Function(saved)();
-    }
-  }catch(e){console.log("Boot error:",e.message)}
+/* Home icon clicks */
+document.getElementById("home").addEventListener("click", (e) => {
+  const icon = e.target.closest(".icon");
+  if (!icon) return;
+  const app = icon.getAttribute("data-app");
+  if (app) openApp(app);
+});
+
+/* Open Control Center via hotspot */
+document.getElementById("ccHotspot").addEventListener("click", () => setScreen("ctrlCenter"));
+
+/* =========================
+   CLOCK + BATTERY
+   ========================= */
+const statusTime = document.getElementById("statusTime");
+const lockTime = document.getElementById("lockTime");
+function updateTime() {
+  const t = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  statusTime.textContent = t;
+  lockTime.textContent = t;
+}
+setInterval(updateTime, 1000); updateTime();
+
+let battery = 100;
+const batteryEl = document.getElementById("battery");
+setInterval(() => {
+  battery = Math.max(0, battery - 0.03);
+  batteryEl.textContent = `${Math.floor(battery)}%`;
+}, 3000);
+
+/* =========================
+   THEME ENGINE (PREFS)
+   ========================= */
+const defaults = { hue: 210, glow: 0.25, dark: 0.0, reduceMotion: false };
+function loadPrefs(){
+  try { return { ...defaults, ...(JSON.parse(localStorage.getItem(KEY_PREFS)) || {}) }; }
+  catch { return { ...defaults }; }
+}
+function savePrefs(p){ localStorage.setItem(KEY_PREFS, JSON.stringify(p)); }
+let PREFS = loadPrefs();
+
+const themeStyle = document.getElementById("theme-style");
+function applyPrefsTheme() {
+  const accent = `hsl(${PREFS.hue} 90% 60%)`;
+  const accent2 = `hsl(${(PREFS.hue + 40) % 360} 90% 55%)`;
+  const glow = PREFS.glow;
+  const dark = PREFS.dark;
+
+  // Your permanent CSS (from users) gets appended after our safe vars
+  const savedThemeCSS = localStorage.getItem(KEY_PERM_CSS) || "";
+
+  themeStyle.textContent = `
+:root{
+  --np-accent:${accent};
+  --np-accent2:${accent2};
+  --np-glow:${glow};
+  --np-dark:${dark};
+}
+.status{
+  background: linear-gradient(90deg, rgba(27,27,47,1), rgba(22,33,62,1));
+}
+.lock .time{ color: var(--np-accent); }
+.app h2{ color: var(--np-accent2); }
+button{
+  background: linear-gradient(135deg, var(--np-accent), var(--np-accent2));
+}
+.icon .box, button, textarea{
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.45),
+    0 0 calc(18px * var(--np-glow)) color-mix(in srgb, var(--np-accent) 55%, transparent);
+}
+.phone{
+  background: linear-gradient(180deg, #0b0b0b, #10101a);
+  filter: brightness(calc(1 - var(--np-dark)));
+}
+${PREFS.reduceMotion ? `.screen{transition:none !important;}` : ``}
+
+/* ---- Saved Permanent CSS (user) ---- */
+${savedThemeCSS}
+`;
+}
+applyPrefsTheme();
+
+/* Wire prefs UI */
+function syncPrefsUI(){
+  document.getElementById("hue").value = String(PREFS.hue);
+  document.getElementById("glow").value = String(Math.round(PREFS.glow * 100));
+  document.getElementById("dark").value = String(Math.round(PREFS.dark * 100));
+  document.getElementById("motion").checked = !!PREFS.reduceMotion;
+}
+syncPrefsUI();
+
+function updatePrefsFromUI(){
+  PREFS.hue = +document.getElementById("hue").value;
+  PREFS.glow = (+document.getElementById("glow").value) / 100;
+  PREFS.dark = (+document.getElementById("dark").value) / 100;
+  PREFS.reduceMotion = !!document.getElementById("motion").checked;
+  savePrefs(PREFS);
+  applyPrefsTheme();
+}
+["hue","glow","dark","motion"].forEach(id => {
+  document.getElementById(id).addEventListener("input", updatePrefsFromUI);
+  document.getElementById(id).addEventListener("change", updatePrefsFromUI);
+});
+document.getElementById("resetPrefs").addEventListener("click", () => {
+  PREFS = { ...defaults };
+  savePrefs(PREFS);
+  syncPrefsUI();
+  applyPrefsTheme();
+  alert("Preferences reset.");
+});
+
+/* =========================
+   DEV ENGINE (TEMP + TWO-SLOT SAVE)
+   ========================= */
+const tempStyle = document.getElementById("temp-style");
+const devInput = document.getElementById("devInput");
+devInput.value = localStorage.getItem(KEY_DEV_DRAFT) || "";
+devInput.addEventListener("input", () => localStorage.setItem(KEY_DEV_DRAFT, devInput.value));
+
+function clearTemp(){
+  tempStyle.textContent = "";
+  alert("Temp cleared.");
 }
 
-/* DEV ACTIONS */
 function runTemp(){
-  try{new Function(dev.value)();alert("Ran (temporary)")}
-  catch(e){alert(e.message)}
+  const text = (devInput.value || "");
+  try {
+    if (text.trim().startsWith("/*CSS*/")) {
+      tempStyle.textContent = text.replace("/*CSS*/", "");
+      alert("Temp CSS applied. Reload clears it.");
+      return;
+    }
+    new Function(text)();
+    alert("Temp JS ran.");
+  } catch (e) {
+    alert("Temp error:\n" + e.message);
+  }
 }
-function savePermanent(){
-  localStorage.setItem(KEY,dev.value);
-  alert("Saved permanently. Reload to confirm.");
+
+/* Save permanent CSS slot */
+function savePermanentCSS(){
+  const text = (devInput.value || "");
+  if (!text.trim().startsWith("/*CSS*/")) {
+    alert("For Permanent CSS, start your code with:\n/*CSS*/");
+    return;
+  }
+  const css = text.replace("/*CSS*/", "");
+  localStorage.setItem(KEY_PERM_CSS, css);
+  applyPrefsTheme();
+  alert("Permanent CSS saved. Reload not required.");
 }
-function clearPermanent(){
-  localStorage.removeItem(KEY);
-  sandbox.textContent="";
-  alert("Cleared. Reload clean.");
+function clearPermanentCSS(){
+  localStorage.removeItem(KEY_PERM_CSS);
+  applyPrefsTheme();
+  alert("Permanent CSS cleared.");
 }
+
+/* Save permanent JS slot */
+function savePermanentJS(){
+  const text = (devInput.value || "");
+  if (text.trim().startsWith("/*CSS*/")) {
+    alert("That looks like CSS. Use Save Permanent CSS instead.");
+    return;
+  }
+  localStorage.setItem(KEY_PERM_JS, text);
+  alert("Permanent JS saved. Reload to run it from boot.");
+}
+function clearPermanentJS(){
+  localStorage.removeItem(KEY_PERM_JS);
+  alert("Permanent JS cleared.");
+}
+
+/* Panic clear */
+function panicClear(){
+  localStorage.removeItem(KEY_PERM_JS);
+  localStorage.removeItem(KEY_PERM_CSS);
+  localStorage.removeItem(KEY_PREFS);
+  localStorage.removeItem(KEY_DEV_DRAFT);
+  tempStyle.textContent = "";
+  applyPrefsTheme();
+  alert("Cleared all saved code + prefs. Reloading…");
+  location.reload();
+}
+
+/* =========================
+   BOOTLOADER (RUNS ON EVERY LOAD)
+   ========================= */
+(function bootPersistentJS(){
+  const savedJS = localStorage.getItem(KEY_PERM_JS);
+  if (!savedJS) return;
+  try {
+    new Function(savedJS)();
+    console.log("NULLPHONE: Permanent JS ran.");
+  } catch (e) {
+    console.log("NULLPHONE: Permanent JS error:", e.message);
+    // Don't alert on boot; Control Center stays usable
+  }
+})();
 </script>
 </body>
 </html>
