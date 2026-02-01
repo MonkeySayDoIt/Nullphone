@@ -6,254 +6,163 @@
 <title>NULLPHONE</title>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  height: 100vh;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+*{box-sizing:border-box}
+body{
+  margin:0;height:100vh;background:black;
+  display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif
 }
-
-/* PHONE */
-.phone {
-  width: 100%;
-  max-width: 390px;
-  height: 100%;
-  max-height: 780px;
-  background: #0b0b0b;
-  color: white;
-  border-radius: 26px;
-  overflow: hidden;
-  position: relative;
+.phone{
+  width:100%;max-width:390px;height:100%;max-height:780px;
+  background:#0b0b0b;color:white;border-radius:26px;
+  overflow:hidden;position:relative
 }
-
-/* STATUS BAR */
-.status {
-  height: 32px;
-  padding: 6px 12px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  opacity: 0.85;
+.status{
+  height:32px;padding:6px 12px;
+  display:flex;justify-content:space-between;
+  font-size:13px;opacity:.85
 }
-
-/* SCREENS */
-.screen {
-  position: absolute;
-  top: 32px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #0b0b0b;
-  transform: translateY(100%);
-  opacity: 0;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+.screen{
+  position:absolute;top:32px;left:0;right:0;bottom:0;
+  background:#0b0b0b;
+  transform:translateY(100%);
+  opacity:0;
+  transition:transform .35s ease,opacity .35s ease
 }
-
-.screen.active {
-  transform: translateY(0);
-  opacity: 1;
+.screen.active{transform:translateY(0);opacity:1}
+.lock{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.lock .time{font-size:48px;font-weight:300}
+.lock .hint{opacity:.5;margin-top:10px}
+.home{
+  padding:28px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:22px
 }
-
-/* LOCK */
-.lock {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.icon{text-align:center;font-size:12px}
+.icon .box{
+  width:64px;height:64px;border-radius:16px;
+  background:#1a1a1a;margin:0 auto 6px;
+  display:flex;align-items:center;justify-content:center;font-size:24px
 }
-
-.lock .time {
-  font-size: 48px;
-  font-weight: 300;
+.app{padding:24px;display:flex;flex-direction:column}
+.app button{
+  margin-top:auto;padding:14px;border-radius:14px;
+  background:#1a1a1a;color:white;border:none;font-size:16px
 }
-
-.lock .hint {
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.5;
-}
-
-/* HOME */
-.home {
-  padding: 28px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-.icon {
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.icon .box {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: #1a1a1a;
-  margin: 0 auto 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-/* APP */
-.app {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-}
-
-.app h2 {
-  margin-top: 0;
-}
-
-.app button {
-  margin-top: auto;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  background: #1a1a1a;
-  color: white;
-  font-size: 16px;
-}
-
-/* DEV TEXTAREA */
-textarea {
-  flex: 1;
-  background: #050505;
-  color: #00ff88;
-  font-family: monospace;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  resize: none;
-  margin-bottom: 12px;
+textarea{
+  flex:1;background:#050505;color:#00ff88;
+  font-family:monospace;border:none;border-radius:12px;
+  padding:12px;margin-bottom:12px;resize:none
 }
 </style>
 
-<!-- SANDBOX STYLE (SAFE) -->
 <style id="sandbox-style"></style>
 </head>
 
 <body>
 <div class="phone">
 
-  <!-- STATUS BAR -->
-  <div class="status">
-    <div id="statusTime"></div>
-    <div id="battery"></div>
-  </div>
+<div class="status">
+  <div id="statusTime"></div>
+  <div id="battery"></div>
+</div>
 
-  <!-- LOCK -->
-  <div class="screen lock active" id="lock">
-    <div class="time" id="lockTime"></div>
-    <div class="hint">Tap to unlock</div>
-  </div>
+<div class="screen lock active" id="lock">
+  <div class="time" id="lockTime"></div>
+  <div class="hint">Tap to unlock</div>
+</div>
 
-  <!-- HOME -->
-  <div class="screen home" id="home">
-    <div class="icon" onclick="openApp('system')"><div class="box">⚙️</div>System</div>
-    <div class="icon" onclick="openApp('logs')"><div class="box">📁</div>Logs</div>
-    <div class="icon" onclick="openApp('signal')"><div class="box">📡</div>Signal</div>
-    <div class="icon" onclick="openApp('void')"><div class="box">⬛</div>Void</div>
-    <div class="icon" onclick="openApp('dev')"><div class="box">💻</div>Dev</div>
-  </div>
+<div class="screen home" id="home">
+  <div class="icon" onclick="openApp('system')"><div class="box">⚙️</div>System</div>
+  <div class="icon" onclick="openApp('signal')"><div class="box">📡</div>Signal</div>
+  <div class="icon" onclick="openApp('void')"><div class="box">⬛</div>Void</div>
+  <div class="icon" onclick="openApp('dev')"><div class="box">💻</div>Dev</div>
+</div>
 
-  <!-- APPS -->
-  <div class="screen app" id="system">
-    <h2>System</h2>
-    <p>NULLPHONE OS 1.0</p>
-    <button onclick="goHome()">Home</button>
-  </div>
+<div class="screen app" id="system">
+  <h2>System</h2>
+  <p id="sysText">NULLPHONE OS 1.0</p>
+  <button onclick="goHome()">Home</button>
+</div>
 
-  <div class="screen app" id="logs">
-    <h2>Logs</h2>
-    <p>No entries.</p>
-    <button onclick="goHome()">Home</button>
-  </div>
+<div class="screen app" id="signal">
+  <h2>Signal</h2>
+  <p id="sigText">Awaiting input.</p>
+  <button onclick="goHome()">Home</button>
+</div>
 
-  <div class="screen app" id="signal">
-    <h2>Signal</h2>
-    <p>No signal detected.</p>
-    <button onclick="goHome()">Home</button>
-  </div>
+<div class="screen app" id="void">
+  <h2>Void</h2>
+  <p>Nothing responds.</p>
+  <button onclick="goHome()">Home</button>
+</div>
 
-  <div class="screen app" id="void">
-    <h2>Void</h2>
-    <p>Nothing responds.</p>
-    <button onclick="goHome()">Home</button>
-  </div>
-
-  <!-- DEV APP -->
-  <div class="screen app" id="dev">
-    <h2>Dev Console</h2>
-
-    <textarea id="devInput" placeholder="// Paste JS here
-// Use JS only (safe sandbox)"></textarea>
-
-    <button onclick="runDevCode()">Run Code</button>
-    <button onclick="resetDev()" style="opacity:.6;">Reset Dev</button>
-    <button onclick="goHome()">Home</button>
-  </div>
+<div class="screen app" id="dev">
+  <h2>Dev Console</h2>
+  <textarea id="devInput" placeholder="// JS or CSS
+// Save = permanent"></textarea>
+  <button onclick="runDev()">Run (temp)</button>
+  <button onclick="saveJS()">Save Permanent JS</button>
+  <button onclick="saveCSS()">Save Permanent CSS</button>
+  <button onclick="clearAll()" style="opacity:.6">Clear Permanent</button>
+  <button onclick="goHome()">Home</button>
+</div>
 
 </div>
 
 <script>
-/* TIME */
-const statusTime = document.getElementById("statusTime");
-const lockTime = document.getElementById("lockTime");
-function updateTime() {
-  const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  statusTime.textContent = t;
-  lockTime.textContent = t;
-}
-setInterval(updateTime, 1000);
-updateTime();
+/* CLOCK */
+const st=document.getElementById("statusTime");
+const lt=document.getElementById("lockTime");
+setInterval(()=>{const t=new Date().toLocaleTimeString([],{
+  hour:"2-digit",minute:"2-digit"
+});st.textContent=t;lt.textContent=t},1000);
 
 /* BATTERY */
-let battery = 100;
-const batteryEl = document.getElementById("battery");
-setInterval(() => {
-  battery = Math.max(0, battery - 0.03);
-  batteryEl.textContent = `${Math.floor(battery)}%`;
-}, 3000);
+let b=100;const be=document.getElementById("battery");
+setInterval(()=>{b=Math.max(0,b-.05);be.textContent=Math.floor(b)+"%"},3000);
 
-/* SCREEN CONTROL */
-function setScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+/* NAV */
+function setScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active")
 }
-function openApp(id) { setScreen(id); }
-function goHome() { setScreen("home"); }
-document.getElementById("lock").onclick = () => setScreen("home");
+function openApp(id){setScreen(id)}
+function goHome(){setScreen("home")}
+document.getElementById("lock").onclick=()=>setScreen("home")
 
-/* DEV SANDBOX */
-const devInput = document.getElementById("devInput");
+/* PERSISTENCE */
+const JSKEY="NULLPHONE_JS",CSSKEY="NULLPHONE_CSS";
+const sandbox=document.getElementById("sandbox-style");
+const dev=document.getElementById("devInput");
 
-function runDevCode() {
-  const code = devInput.value;
-  try {
-    new Function(code)();
-    alert("Code executed");
-  } catch (e) {
-    alert("Error:\n" + e.message);
-  }
+/* LOAD SAVED */
+if(localStorage.getItem(CSSKEY)){
+  sandbox.textContent=localStorage.getItem(CSSKEY)
+}
+if(localStorage.getItem(JSKEY)){
+  try{new Function(localStorage.getItem(JSKEY))()}catch(e){}
 }
 
-function resetDev() {
-  devInput.value = "";
-  document.getElementById("sandbox-style").innerHTML = "";
-  alert("Dev sandbox reset");
+/* DEV */
+function runDev(){
+  try{new Function(dev.value)();alert("Executed (temp)")}
+  catch(e){alert(e.message)}
+}
+function saveJS(){
+  localStorage.setItem(JSKEY,dev.value);
+  alert("Permanent JS saved. Reload to confirm.")
+}
+function saveCSS(){
+  localStorage.setItem(CSSKEY,dev.value);
+  sandbox.textContent=dev.value;
+  alert("Permanent CSS saved.")
+}
+function clearAll(){
+  localStorage.removeItem(JSKEY);
+  localStorage.removeItem(CSSKEY);
+  sandbox.textContent="";
+  alert("Permanent code cleared. Reload.")
 }
 </script>
-
 </body>
 </html>
